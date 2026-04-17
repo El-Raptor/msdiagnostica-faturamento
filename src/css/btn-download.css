@@ -1,0 +1,28 @@
+.btn-download-json {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    outline: none;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    color: var(--muted);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 500;
+    transition: border-color 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
+    white-space: nowrap;
+}
+
+.btn-download-json:hover {
+    border-color: var(--hover-primary);
+    color: var(--hover-primary);
+    box-shadow: 0 2px 8px rgba(0, 133, 96, 0.12);
+    transform: translateY(-1px);
+}
+
+.btn-download-json:active {
+    transform: translateY(0);
+}
