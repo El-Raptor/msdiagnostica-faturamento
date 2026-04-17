@@ -11,7 +11,7 @@ export async function getFaturamento() {
         return await fetchMock("faturamento.json");
     }
 
-    const campos = "VLRTOT, NOMECID, NOMEPARC, MES_ANO";
+    const campos = "VLRTOT, NOMECID, NOMEPARC, MES_ANO, UF";
     const results = await JSK.consultarView("VW_FATURAMENTO_X_CIDADE_SKMS", campos, null);
 
     if (!results || results.status == 0) throw new Error("Erro ao consultar faturamento por cidade.", results.statusMessage);
@@ -22,6 +22,19 @@ export async function getFaturamento() {
     console.log("Registros Limpos", registrosLimpos);
 
     return registrosLimpos;
+}
+
+function formatarNomeEstado(nome) {
+    if (!nome) return "Estado Não Informado";
+    const preposicoes = ["de", "da", "do", "das", "dos", "e"];
+    return nome
+        .toLowerCase()
+        .split(' ')
+        .map((word, index) => {
+            if (index > 0 && preposicoes.includes(word)) return word;
+            return word.charAt(0).toUpperCase() + word.slice(1);
+        })
+        .join(' ');
 }
 
 function flatResults(rawRecords) {
@@ -51,42 +64,22 @@ function flatResults(rawRecords) {
   return registrosLimpos;
 }
 
-/**
- * Transforma o array bruto em uma estrutura agrupada por cidade.
- *
- * Retorna:
- * {
- *   meses: ['202502', '202503', '202504'],          // 3 meses ordenados
- *   cidades: [
- *     {
- *       nome: 'São Paulo',
- *       clientes: [
- *         { nome: 'Acme Ltda', valores: { '202502': 45200, '202503': 31800, '202504': 52100 } },
- *         ...
- *       ],
- *       totais: { '202502': 73850, '202503': 65500, '202504': 66900 }
- *     },
- *     ...
- *   ]
- * }
- *
- * @param {Array} resultado - Array de linhas brutas da query
- * @returns {{ meses: string[], cidades: Array }}
- */
-export function agruparPorCidade(resultado) {
+export function agruparPorEstado(resultado) {
     const mesesSet = new Set();
-    const mapaClientes = new Map(); // "CIDADE|||CLIENTE" → { nome, cidade, valores }
+    const mapaClientes = new Map(); // "UF|||CIDADE|||CLIENTE"
 
     for (const linha of resultado) {
-        const { NOMECID, NOMEPARC, MES_ANO, VLRTOT } = linha;
+        const { UF, NOMECID, NOMEPARC, MES_ANO, VLRTOT } = linha;
 
         if (!NOMECID || !NOMEPARC || !MES_ANO) continue;
 
         if (VLRTOT !== null) mesesSet.add(MES_ANO);
 
-        const chave = `${NOMECID}|||${NOMEPARC}`;
+        const nomeUfFormatado = formatarNomeEstado(UF);
+        const chave = `${nomeUfFormatado}|||${NOMECID}|||${NOMEPARC}`;
+
         if (!mapaClientes.has(chave)) {
-            mapaClientes.set(chave, { nome: NOMEPARC, cidade: NOMECID, valores: {} });
+            mapaClientes.set(chave, { estado: nomeUfFormatado, nome: NOMEPARC, cidade: NOMECID, valores: {} });
         }
 
         const cliente = mapaClientes.get(chave);
@@ -98,32 +91,35 @@ export function agruparPorCidade(resultado) {
         } else if (valorAtual === undefined) {
             cliente.valores[MES_ANO] = null;
         }
-    }
+    }const meses = Array.from(mesesSet).sort();
 
-    const meses = Array.from(mesesSet).sort();
-
-    // Agrupar por cidade
-    const mapaCidades = new Map();
+    // Agrupar clientes primeiro por Estado, depois por Cidade
+    const mapaEstados = new Map();
     for (const cliente of mapaClientes.values()) {
-        if (!mapaCidades.has(cliente.cidade)) {
-            mapaCidades.set(cliente.cidade, { nome: cliente.cidade, clientes: [], totais: {} });
+        if (!mapaEstados.has(cliente.estado)) {
+            mapaEstados.set(cliente.estado, { nome: cliente.estado, cidadesMap: new Map() });
         }
-        mapaCidades.get(cliente.cidade).clientes.push(cliente);
+
+        const estadoObj = mapaEstados.get(cliente.estado);
+        if (!estadoObj.cidadesMap.has(cliente.cidade)) {
+            estadoObj.cidadesMap.set(cliente.cidade, { nome: cliente.cidade, clientes: [], totais: {} });
+        }
+
+        estadoObj.cidadesMap.get(cliente.cidade).clientes.push(cliente);
     }
 
-    // Calcular totais por cidade/mês
-    for (const cidade of mapaCidades.values()) {
-        for (const mes of meses) {
-            cidade.totais[mes] = cidade.clientes.reduce((acc, c) => {
-                return acc + (c.valores[mes] ?? 0);
-            }, 0);
-        }
-        cidade.clientes.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
-    }
+    // Calcular totais e transformar os Maps em Arrays ordenados
+    const estados = Array.from(mapaEstados.values()).map(estado => {
+        const cidades = Array.from(estado.cidadesMap.values()).map(cidade => {
+            for (const mes of meses) {
+                cidade.totais[mes] = cidade.clientes.reduce((acc, c) => acc + (c.valores[mes] ?? 0), 0);
+            }
+            cidade.clientes.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+            return cidade;
+        }).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
 
-    const cidades = Array.from(mapaCidades.values()).sort((a, b) =>
-        a.nome.localeCompare(b.nome, 'pt-BR')
-    );
+        return { nome: estado.nome, cidades };
+    }).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
 
-    return { meses, cidades };
+    return { meses, estados };
 }

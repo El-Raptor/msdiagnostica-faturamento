@@ -1,8 +1,8 @@
 import { renderErrorModal } from "./components/error-modal.js";
 import { criarLoading, removerLoading } from "./components/loading.js";
 import { criarHeader } from "./components/page-header.js";
-import { criarCardCidade } from "./components/cidade-card.js";
-import { getFaturamento, agruparPorCidade } from "./model/faturamento.js";
+import { criarSecaoEstado } from "./components/estado-section.js"; // Importe o novo componente
+import { getFaturamento, agruparPorEstado } from "./model/faturamento.js"; // Importe a função nova
 
 document.addEventListener("DOMContentLoaded", async () => {
     const main = document.querySelector("main");
@@ -15,10 +15,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
         const resposta = await getFaturamento();
 
-        const { meses, cidades } = agruparPorCidade(resposta);
+        // Pegamos estados em vez de cidades
+        const { meses, estados } = agruparPorEstado(resposta); 
 
         removerLoading();
-        renderPagina(pageWrapper, meses, cidades, resposta);
+        renderPagina(pageWrapper, meses, estados);
 
     } catch (error) {
         removerLoading();
@@ -33,24 +34,20 @@ function criarPageWrapper() {
     return div;
 }
 
-function renderPagina(pageWrapper, meses, cidades, dadosBrutos) {
+function renderPagina(pageWrapper, meses, estados) {
     const header = criarHeader(meses);
     pageWrapper.insertBefore(header, pageWrapper.firstChild);
 
-    if (cidades.length === 0) {
+    if (estados.length === 0) {
         renderEmptyState(pageWrapper);
         return;
     }
 
-    const grid = document.createElement("div");
-    grid.className = "cards-grid";
-
-    cidades.forEach((cidade, index) => {
-        const card = criarCardCidade(cidade, meses, index);
-        grid.appendChild(card);
+    // Renderiza uma seção para cada estado
+    estados.forEach((estado) => {
+        const secao = criarSecaoEstado(estado, meses);
+        pageWrapper.appendChild(secao);
     });
-
-    pageWrapper.appendChild(grid);
 }
 
 function renderEmptyState(pageWrapper) {

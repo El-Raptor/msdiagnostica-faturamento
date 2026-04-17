@@ -308,6 +308,95 @@ body {
     100% { background-position: -200% 0; }
 }
 
+/* ── Seção de Estado Colapsável ──────────────── */
+
+.estado-section {
+    margin-top: 32px;
+    background: transparent;
+}
+
+.estado-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    user-select: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    position: relative;
+    z-index: 10;
+}
+
+.estado-header:hover {
+    border-color: var(--border-lit);
+    box-shadow: var(--shadow-md);
+}
+
+.estado-header__title-group {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.estado-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.3px;
+}
+
+.estado-count {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--muted);
+    background: var(--border);
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.estado-toggle {
+    font-size: 18px;
+    color: var(--muted);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Magia do Grid para animar o collapse suavemente */
+.estado-content {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.estado-content-inner {
+    overflow: hidden;
+    padding-bottom: 8px; /* Pequeno espaçamento inferior */
+    opacity: 1;
+    transition: opacity 0.35s ease, padding 0.35s ease;
+}
+
+.estado-content-inner .cards-grid {
+    /* Como já temos uma margem na seção, reduzimos a margem superior da grid interna */
+    margin-top: 20px; 
+}
+
+/* Modificadores quando está fechado */
+.estado-section.is-collapsed .estado-content {
+    grid-template-rows: 0fr;
+}
+
+.estado-section.is-collapsed .estado-content-inner {
+    opacity: 0;
+    padding-bottom: 0;
+}
+
+.estado-section.is-collapsed .estado-toggle {
+    transform: rotate(-90deg);
+}
+
 /* ── Empty State ─────────────────────────────── */
 
 .empty-state {
