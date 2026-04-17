@@ -1,0 +1,103 @@
+.error-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(46, 60, 80, 0);         /* var(--text) com alpha 0 */
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  transition: background-color 0.25s ease, backdrop-filter 0.25s ease;
+}
+
+.error-modal-overlay--visible {
+  background-color: rgba(46, 60, 80, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.error-modal {
+  background-color: var(--surface);
+  border-radius: 16px;
+  max-width: 420px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  transform: translateY(12px) scale(0.97);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.alert-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 36px 40px 32px;
+}
+
+.error-modal-overlay--visible .error-modal {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.error-modal-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--surface);
+  color: #ef4444;
+  font-size: 50px;
+  margin-bottom: 15px;
+}
+
+.error-modal-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--text);
+  text-align: center;
+}
+
+.error-modal-message {
+  margin: 0;
+  font-size: 15px;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.error-modal-detail {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  font-family: var(--mono);
+  color: #ef4444;
+  word-break: break-word;
+}
+
+.error-modal-btn-ok {
+  width: 100%;
+  height: 75px;
+  font-size: 15px;
+  font-family: inherit;
+  font-weight: 500;
+  border: none;
+  border-radius: 0 0 15px 15px;
+  background-color: #FF6760;
+  color: white;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.error-modal-btn-ok:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
