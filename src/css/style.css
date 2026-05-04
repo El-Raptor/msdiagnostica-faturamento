@@ -232,7 +232,8 @@ body {
 }
 
 .fat-table__cell-valor--empty {
-    color: var(--border-lit);
+    color: #992424;
+    background-color: #fee2e2;
 }
 
 /* Total row */
