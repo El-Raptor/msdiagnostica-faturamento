@@ -39,7 +39,9 @@ export function criarCardCidade(cidade, meses, index) {
                             ${meses.map(mes => {
                                 const val = cliente.valores[mes] ?? null;
                                 const isEmpty = val === null;
-                                return `<td class="fat-table__cell-valor ${isEmpty ? 'fat-table__cell-valor--empty' : ''}">${formatarMoeda(val)}</td>`;
+                                const isPositive = val > 0; // Verifica se o valor é positivo
+                                
+                                return `<td class="fat-table__cell-valor ${isEmpty ? 'fat-table__cell-valor--empty' : ''} ${isPositive ? 'fat-table__cell-valor--positivo' : ''}">${formatarMoeda(val)}</td>`;
                             }).join('')}
                         </tr>
                     `).join('')}

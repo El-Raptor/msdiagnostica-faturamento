@@ -4,7 +4,7 @@
  * @returns {string}
  */
 export function formatarMoeda(valor) {
-    if (valor === null || valor === undefined) return '—';
+    if (valor === null || valor === undefined) return '0,00';
     return new Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: 'BRL',

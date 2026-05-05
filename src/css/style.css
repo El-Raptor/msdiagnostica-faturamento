@@ -232,7 +232,8 @@ body {
 }
 
 .fat-table__cell-valor--empty {
-    color: var(--border-lit);
+    color: #992424;
+    background-color: #fee2e2;
 }
 
 /* Total row */
@@ -395,6 +396,10 @@ body {
 
 .estado-section.is-collapsed .estado-toggle {
     transform: rotate(-90deg);
+}
+
+.fat-table__cell-valor--positivo {
+    background-color: #d2e8f9;
 }
 
 /* ── Empty State ─────────────────────────────── */
