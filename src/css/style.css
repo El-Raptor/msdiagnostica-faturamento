@@ -189,7 +189,7 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.6px;
     color: var(--muted);
-    border-bottom: 1px solid var(--border);
+    border-bottom: 3px solid var(--border); 
     white-space: nowrap;
 }
 
@@ -212,7 +212,7 @@ body {
 }
 
 .fat-table__row:not(:last-child) td {
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 3px solid var(--border);
 }
 
 .fat-table__cell-cliente {
@@ -242,7 +242,7 @@ body {
 }
 
 .fat-table__row-total td {
-    border-top: 1px solid #b6e8d5;
+    border-top: 3px solid #b6e8d5;
     padding: 12px 16px;
 }
 
@@ -457,5 +457,117 @@ body {
 
     .fat-table__col-valor {
         min-width: 100px;
+    }
+
+    .print-text-danger {
+        color: #ef4444 !important; /* Vermelho padrão do seu tema */
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .print-text-blue {
+        color: #0284c7 !important; /* Um tom de azul legível no papel */
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+
+/* ── Regras de Impressão ──────────────────────── */
+@media print {
+    /* Esconde tudo o que não é o relatório de impressão */
+    body * {
+        visibility: hidden;
+    }
+
+    /* Mostra apenas a área de impressão e seus filhos */
+    #print-section, #print-section * {
+        visibility: visible;
+    }
+
+    #print-section {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background-color: white !important;
+        color: black !important;
+    }
+
+    /* Formatação da Tabela de Relatório Tradicional */
+    .report-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        font-size: 10pt;
+    }
+
+    .report-table th, .report-table td {
+        border: 1px solid #000; /* Borda preta fina tradicional */
+        padding: 6px 8px;
+        text-align: left;
+    }
+
+    .report-table thead th {
+        background-color: #f2f2f2 !important;
+        -webkit-print-color-adjust: exact;
+        font-weight: bold;
+    }
+
+    /* Estilo para as linhas de agrupamento (Estado/Cidade) */
+    .row-group-state {
+        background-color: #e2e8f0 !important;
+        -webkit-print-color-adjust: exact;
+        font-weight: bold;
+        font-size: 11pt;
+    }
+
+    .row-group-city {
+        background-color: #f8fafc !important;
+        -webkit-print-color-adjust: exact;
+        font-weight: 600;
+        padding-left: 20px !important;
+    }
+
+    .cell-money {
+        text-align: right !important;
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+    /* Remove sombras e animações na impressão */
+    .page-header, .cidade-card, .estado-header {
+        display: none !important;
+    }
+}
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-icon i {
+    font-size: 16px;
+    color: var(--primary);
+}
+
+.btn-icon:hover {
+    background-color: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--primary);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Garante que o botão não apareça na própria impressão */
+@media print {
+    .btn-icon, .page-header__actions {
+        display: none !important;
     }
 }

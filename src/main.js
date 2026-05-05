@@ -1,8 +1,9 @@
 import { renderErrorModal } from "./components/error-modal.js";
 import { criarLoading, removerLoading } from "./components/loading.js";
 import { criarHeader } from "./components/page-header.js";
-import { criarSecaoEstado } from "./components/estado-section.js"; // Importe o novo componente
-import { getFaturamento, agruparPorEstado } from "./model/faturamento.js"; // Importe a função nova
+import { criarSecaoEstado } from "./components/estado-section.js";
+import { getFaturamento, agruparPorEstado } from "./model/faturamento.js"; 
+import { gerarRelatorioImpressao } from "./service/print-service.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
     const main = document.querySelector("main");
@@ -14,12 +15,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
         const resposta = await getFaturamento();
-
-        // Pegamos estados em vez de cidades
         const { meses, estados } = agruparPorEstado(resposta); 
 
         removerLoading();
         renderPagina(pageWrapper, meses, estados);
+        
+        // Adiciona funcionalidade ao botão de imprimir (assumindo que ele está no header)
+        configurarBotaoImpressao(estados, meses);
 
     } catch (error) {
         removerLoading();
@@ -59,4 +61,14 @@ function renderEmptyState(pageWrapper) {
         <p class="empty-state__desc">Não há registros de faturamento para o período consultado.</p>
     `;
     pageWrapper.appendChild(empty);
+}
+
+function configurarBotaoImpressao(estados, meses) {
+    // Busca o botão que deve estar no componente page-header
+    const btnPrint = document.querySelector("#btn-imprimir");
+    if (btnPrint) {
+        btnPrint.addEventListener("click", () => {
+            gerarRelatorioImpressao(estados, meses);
+        });
+    }
 }

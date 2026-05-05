@@ -19,7 +19,11 @@ export function criarHeader(meses) {
                 <h1 class="page-header__title">Faturamento</h1>
                 ${periodo ? `<span class="page-header__periodo">${periodo}</span>` : ''}
             </div>
-            <div class="page-header__actions" id="header-actions"></div>
+            <div class="page-header__actions" id="header-actions">
+                <button id="btn-imprimir" class="btn-icon" title="Imprimir PDF">
+                    <i class="bi bi-printer"></i> Imprimir PDF
+                </button>
+            </div>
         </div>
     `;
 
