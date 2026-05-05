@@ -398,6 +398,10 @@ body {
     transform: rotate(-90deg);
 }
 
+.fat-table__cell-valor--positivo {
+    background-color: #d2e8f9;
+}
+
 /* ── Empty State ─────────────────────────────── */
 
 .empty-state {
